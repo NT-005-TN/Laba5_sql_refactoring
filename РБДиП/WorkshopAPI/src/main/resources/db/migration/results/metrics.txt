@@ -1,0 +1,114 @@
+     tablename     | total_size 
+-------------------+------------
+ audit_log         | 42 MB
+ users             | 3152 kB
+ product_materials | 2176 kB
+ products          | 1424 kB
+ clients           | 1312 kB
+ employees         | 176 kB
+ materials         | 88 kB
+ orders            | 80 kB
+ order_items       | 32 kB
+(9 строк)
+
+     tablename     |                  indexname                   | index_size 
+-------------------+----------------------------------------------+------------
+ audit_log         | audit_log_pkey                               | 4408 kB
+ audit_log         | idx_audit_log_user_id                        | 1568 kB
+ audit_log         | idx_audit_log_table_name                     | 1376 kB
+ audit_log         | idx_audit_log_created_at                     | 1368 kB
+ users             | users_email_key                              | 688 kB
+ users             | users_username_key                           | 544 kB
+ product_materials | product_materials_product_id_material_id_key | 480 kB
+ product_materials | product_materials_pkey                       | 344 kB
+ users             | users_pkey                                   | 240 kB
+ product_materials | idx_product_materials_product_id             | 208 kB
+ products          | products_sku_key                             | 176 kB
+ products          | idx_products_name_lower                      | 176 kB
+ clients           | clients_user_id_key                          | 168 kB
+ clients           | idx_clients_user_id                          | 152 kB
+ clients           | clients_pkey                                 | 152 kB
+ products          | products_pkey                                | 128 kB
+ product_materials | idx_product_materials_material_id            | 120 kB
+ users             | idx_users_role_enabled                       | 88 kB
+ users             | idx_users_enabled                            | 88 kB
+ users             | idx_users_role                               | 88 kB
+ clients           | idx_clients_lastname_lower                   | 64 kB
+ clients           | idx_clients_firstname_lower                  | 64 kB
+ products          | idx_products_in_stock                        | 56 kB
+ products          | idx_products_type                            | 56 kB
+ products          | idx_products_type_available                  | 56 kB
+ products          | idx_products_is_available                    | 56 kB
+ employees         | employees_user_id_key                        | 40 kB
+ employees         | idx_employees_user_id                        | 32 kB
+ employees         | employees_pkey                               | 32 kB
+ materials         | materials_name_key                           | 16 kB
+ orders            | orders_pkey                                  | 16 kB
+ orders            | orders_order_number_key                      | 16 kB
+ materials         | materials_pkey                               | 16 kB
+ order_items       | idx_order_items_created_at                   | 8192 bytes
+ orders            | idx_orders_status_datetime                   | 8192 bytes
+ orders            | idx_orders_datetime                          | 8192 bytes
+ orders            | idx_orders_status                            | 8192 bytes
+ order_items       | idx_order_items_product_id                   | 8192 bytes
+ order_items       | idx_order_items_order_id                     | 8192 bytes
+ orders            | idx_orders_client_id                         | 8192 bytes
+ order_items       | order_items_pkey                             | 8192 bytes
+(41 строка)
+
+ schemaname | tablename |       indexname       | idx_scan | idx_tup_read | idx_tup_fetch 
+------------+-----------+-----------------------+----------+--------------+---------------
+ public     | users     | users_pkey            |   206500 |       206500 |        206500
+ public     | materials | materials_pkey        |    15000 |        15000 |         15000
+ public     | products  | products_pkey         |    15000 |        15000 |         15000
+ public     | audit_log | idx_audit_log_user_id |        1 |           23 |             0
+(4 строки)
+
+ schemaname |     tablename     |                  indexname                   
+------------+-------------------+----------------------------------------------
+ public     | audit_log         | idx_audit_log_created_at
+ public     | audit_log         | idx_audit_log_table_name
+ public     | clients           | clients_user_id_key
+ public     | clients           | idx_clients_firstname_lower
+ public     | clients           | idx_clients_lastname_lower
+ public     | clients           | idx_clients_user_id
+ public     | employees         | employees_user_id_key
+ public     | employees         | idx_employees_user_id
+ public     | materials         | materials_name_key
+ public     | order_items       | idx_order_items_created_at
+ public     | order_items       | idx_order_items_order_id
+ public     | order_items       | idx_order_items_product_id
+ public     | orders            | idx_orders_client_id
+ public     | orders            | idx_orders_datetime
+ public     | orders            | idx_orders_status
+ public     | orders            | idx_orders_status_datetime
+ public     | orders            | orders_order_number_key
+ public     | product_materials | idx_product_materials_material_id
+ public     | product_materials | idx_product_materials_product_id
+ public     | product_materials | product_materials_product_id_material_id_key
+ public     | products          | idx_products_in_stock
+ public     | products          | idx_products_is_available
+ public     | products          | idx_products_name_lower
+ public     | products          | idx_products_type
+ public     | products          | idx_products_type_available
+ public     | products          | products_sku_key
+ public     | users             | idx_users_enabled
+ public     | users             | idx_users_role
+ public     | users             | idx_users_role_enabled
+ public     | users             | users_email_key
+ public     | users             | users_username_key
+(31 строка)
+
+    table_name     | row_count | dead_rows | last_vacuum |         last_analyze          
+-------------------+-----------+-----------+-------------+-------------------------------
+ audit_log         |    200000 |         0 |             | 2026-04-03 17:24:35.002829+03
+ product_materials |     15000 |         0 |             | 2026-04-03 17:24:33.641055+03
+ users             |     10000 |         0 |             | 2026-04-03 17:24:34.859036+03
+ clients           |      6000 |         0 |             | 2026-04-03 17:24:34.705238+03
+ products          |      5000 |         0 |             | 2026-04-03 17:24:34.788139+03
+ employees         |       500 |         0 |             | 2026-04-03 17:24:33.6273+03
+ materials         |       200 |         0 |             | 2026-04-03 17:24:33.644627+03
+ order_items       |         0 |         0 |             | 2026-04-03 17:24:34.709091+03
+ orders            |         0 |         2 |             | 2026-04-03 17:24:34.707777+03
+(9 строк)
+

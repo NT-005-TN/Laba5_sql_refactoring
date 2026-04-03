@@ -1,0 +1,26 @@
+запуск
+# 1. Создать базу данных
+createdb jewelry_workshop
+
+# 2. Выполнить схему
+psql -d jewelry_workshop -f schema.sql
+
+# 3. Сгенерировать тестовые данные
+psql -d jewelry_workshop -f test_data.sql
+
+# 4. Выполнить EXPLAIN ANALYZE до оптимизации
+psql -d jewelry_workshop -f before_optimization.sql > results_before.txt
+
+# 5. Создать индексы
+psql -d jewelry_workshop -f indexes.sql
+
+# 6. Выполнить EXPLAIN ANALYZE после оптимизации
+psql -d jewelry_workshop -f after_optimization.sql > results_after.txt
+
+# 7. Сравнить результаты
+diff results_before.txt results_after.txt
+
+
+
+
+для сбора стаистики

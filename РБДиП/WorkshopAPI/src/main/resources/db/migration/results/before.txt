@@ -1,0 +1,159 @@
+                                             QUERY PLAN                                             
+----------------------------------------------------------------------------------------------------
+ Seq Scan on orders  (cost=0.00..1.00 rows=1 width=98) (actual time=0.009..0.010 rows=0.00 loops=1)
+   Filter: (client_id = 123)
+   Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=90
+ Planning Time: 0.563 ms
+ Execution Time: 0.058 ms
+(7 строк)
+
+                                                        QUERY PLAN                                                         
+---------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=147.02..150.08 rows=1 width=78) (actual time=0.657..0.659 rows=0.00 loops=1)
+   Buffers: shared hit=89
+   ->  Result  (cost=147.02..150.08 rows=1 width=78) (actual time=0.656..0.658 rows=0.00 loops=1)
+         Buffers: shared hit=89
+         ->  Sort  (cost=147.02..147.03 rows=1 width=62) (actual time=0.656..0.657 rows=0.00 loops=1)
+               Sort Key: (COALESCE((SubPlan 2), '0'::numeric)) DESC
+               Sort Method: quicksort  Memory: 25kB
+               Buffers: shared hit=89
+               ->  Seq Scan on clients c  (cost=0.00..147.01 rows=1 width=62) (actual time=0.624..0.624 rows=0.00 loops=1)
+                     Filter: is_permanent
+                     Rows Removed by Filter: 6000
+                     Buffers: shared hit=86
+                     SubPlan 2
+                       ->  Aggregate  (cost=1.00..1.01 rows=1 width=32) (never executed)
+                             ->  Seq Scan on orders o_1  (cost=0.00..1.00 rows=1 width=16) (never executed)
+                                   Filter: (client_id = c.id)
+         SubPlan 1
+           ->  Aggregate  (cost=1.00..1.01 rows=1 width=8) (never executed)
+                 ->  Seq Scan on orders o  (cost=0.00..1.00 rows=1 width=8) (never executed)
+                       Filter: ((client_id = c.id) AND ((status)::text = 'COMPLETED'::text))
+         SubPlan 3
+           ->  Aggregate  (cost=1.00..1.01 rows=1 width=8) (never executed)
+                 ->  Seq Scan on orders o_2  (cost=0.00..1.00 rows=1 width=8) (never executed)
+                       Filter: (client_id = c.id)
+ Planning:
+   Buffers: shared hit=104
+ Planning Time: 0.683 ms
+ Execution Time: 0.711 ms
+(28 строк)
+
+                                                 QUERY PLAN                                                  
+-------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.00..176.00 rows=2 width=43) (actual time=1.578..1.578 rows=0.00 loops=1)
+   Buffers: shared hit=86
+   ->  Seq Scan on clients  (cost=0.00..176.00 rows=2 width=43) (actual time=1.577..1.577 rows=0.00 loops=1)
+         Filter: (lower((last_name)::text) ~~ '%ivanov%'::text)
+         Rows Removed by Filter: 6000
+         Buffers: shared hit=86
+ Planning:
+   Buffers: shared hit=3
+ Planning Time: 0.096 ms
+ Execution Time: 1.588 ms
+(10 строк)
+
+                                                       QUERY PLAN                                                       
+------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.28..9.32 rows=1 width=40) (actual time=0.009..0.009 rows=0.00 loops=1)
+   Buffers: shared hit=1
+   ->  Nested Loop  (cost=0.28..9.32 rows=1 width=40) (actual time=0.008..0.009 rows=0.00 loops=1)
+         Buffers: shared hit=1
+         ->  Nested Loop  (cost=0.00..1.01 rows=1 width=36) (actual time=0.008..0.008 rows=0.00 loops=1)
+               Join Filter: (o.id = oi.order_id)
+               Buffers: shared hit=1
+               ->  Seq Scan on orders o  (cost=0.00..1.00 rows=1 width=16) (actual time=0.008..0.008 rows=0.00 loops=1)
+                     Filter: (client_id = 123)
+                     Buffers: shared hit=1
+               ->  Seq Scan on order_items oi  (cost=0.00..0.00 rows=1 width=36) (never executed)
+         ->  Index Scan using products_pkey on products p  (cost=0.28..8.30 rows=1 width=20) (never executed)
+               Index Cond: (id = oi.product_id)
+               Index Searches: 0
+ Planning:
+   Buffers: shared hit=151 read=1
+ Planning Time: 0.929 ms
+ Execution Time: 0.027 ms
+(18 строк)
+
+                                                    QUERY PLAN                                                    
+------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.00..16.50 rows=100 width=41) (actual time=0.010..0.128 rows=100.00 loops=1)
+   Buffers: shared hit=18
+   ->  Seq Scan on products  (cost=0.00..148.50 rows=900 width=41) (actual time=0.010..0.122 rows=100.00 loops=1)
+         Filter: (is_available AND ((type)::text = 'RING'::text))
+         Rows Removed by Filter: 896
+         Buffers: shared hit=18
+ Planning:
+   Buffers: shared hit=12
+ Planning Time: 0.054 ms
+ Execution Time: 0.135 ms
+(10 строк)
+
+                                                             QUERY PLAN                                                              
+-------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=6297.81..6300.02 rows=19 width=31) (actual time=62.835..71.216 rows=23.00 loops=1)
+   Buffers: shared hit=4332
+   ->  Gather Merge  (cost=6297.81..6300.02 rows=19 width=31) (actual time=62.834..71.212 rows=23.00 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=4332
+         ->  Sort  (cost=5297.79..5297.81 rows=8 width=31) (actual time=8.262..8.263 rows=7.67 loops=3)
+               Sort Key: created_at DESC
+               Sort Method: quicksort  Memory: 26kB
+               Buffers: shared hit=4332
+               Worker 0:  Sort Method: quicksort  Memory: 25kB
+               Worker 1:  Sort Method: quicksort  Memory: 25kB
+               ->  Parallel Seq Scan on audit_log  (cost=0.00..5297.67 rows=8 width=31) (actual time=0.020..8.196 rows=7.67 loops=3)
+                     Filter: (user_id = 456)
+                     Rows Removed by Filter: 66659
+                     Buffers: shared hit=4256
+ Planning:
+   Buffers: shared hit=31
+ Planning Time: 0.302 ms
+ Execution Time: 71.245 ms
+(20 строк)
+
+                                                       QUERY PLAN                                                        
+-------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=375.32..375.57 rows=100 width=46) (actual time=3.145..3.153 rows=100.00 loops=1)
+   Buffers: shared hit=89
+   ->  Sort  (cost=375.32..390.32 rows=6000 width=46) (actual time=3.144..3.147 rows=100.00 loops=1)
+         Sort Key: last_name
+         Sort Method: top-N heapsort  Memory: 37kB
+         Buffers: shared hit=89
+         ->  Seq Scan on clients  (cost=0.00..146.00 rows=6000 width=46) (actual time=0.008..0.547 rows=6000.00 loops=1)
+               Buffers: shared hit=86
+ Planning:
+   Buffers: shared hit=8
+ Planning Time: 0.082 ms
+ Execution Time: 3.172 ms
+(12 строк)
+
+                                                                QUERY PLAN                                                                
+------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=433.37..433.62 rows=100 width=36) (actual time=2.818..2.826 rows=100.00 loops=1)
+   Buffers: shared hit=89
+   ->  Sort  (cost=433.37..445.87 rows=5000 width=36) (actual time=2.817..2.822 rows=100.00 loops=1)
+         Sort Key: (sum(oi.quantity)) DESC
+         Sort Method: top-N heapsort  Memory: 32kB
+         Buffers: shared hit=89
+         ->  HashAggregate  (cost=192.27..242.27 rows=5000 width=36) (actual time=2.003..2.470 rows=5000.00 loops=1)
+               Group Key: p.id
+               Batches: 1  Memory Usage: 665kB
+               Buffers: shared hit=86
+               ->  Hash Left Join  (cost=0.01..154.77 rows=5000 width=32) (actual time=0.018..1.099 rows=5000.00 loops=1)
+                     Hash Cond: (p.id = oi.product_id)
+                     Buffers: shared hit=86
+                     ->  Seq Scan on products p  (cost=0.00..136.00 rows=5000 width=20) (actual time=0.007..0.542 rows=5000.00 loops=1)
+                           Buffers: shared hit=86
+                     ->  Hash  (cost=0.00..0.00 rows=1 width=20) (actual time=0.005..0.006 rows=0.00 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 8kB
+                           ->  Seq Scan on order_items oi  (cost=0.00..0.00 rows=1 width=20) (actual time=0.005..0.005 rows=0.00 loops=1)
+ Planning:
+   Buffers: shared hit=15
+ Planning Time: 0.128 ms
+ Execution Time: 2.947 ms
+(22 строки)
+
