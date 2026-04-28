@@ -1,71 +1,69 @@
 package com.anasttruh.spring_lab3_notifications.controller;
 
-import com.anasttruh.spring_lab3_notifications.service.NotificationManager;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.anasttruh.spring_lab3_notifications.model.dto.NotificationDto;
+import com.anasttruh.spring_lab3_notifications.model.entity.Notification;
+import com.anasttruh.spring_lab3_notifications.model.enums.NotificationChannel;
+import com.anasttruh.spring_lab3_notifications.model.enums.NotificationStatus;
+import com.anasttruh.spring_lab3_notifications.model.mapper.NotificationMapper;
+import com.anasttruh.spring_lab3_notifications.service.NotificationService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 
 @RestController
+@RequestMapping("/notifications")
+@RequiredArgsConstructor
 public class NotificationController {
 
-    // ФИНАЛЬНАЯ ВЕРСИЯ (Часть 4-5): Прямое внедрение зависимости через конструктор
-    private final NotificationManager notificationManager;
+    private final NotificationService notificationService;
 
-    public NotificationController(NotificationManager notificationManager) {
-        this.notificationManager = notificationManager;
+    @PostMapping("/add")
+    public NotificationDto createNotification(@RequestBody @Valid NotificationDto request) {
+
+        Notification response = notificationService.createNotification(request);
+        return NotificationMapper.toDto(response);
     }
 
-    @GetMapping("/notify")
-    public String notify(@RequestParam String message, @RequestParam String email) {
-        notificationManager.notify(message, email);
-        return "Уведомление отправлено (аннотации)";
+    @GetMapping("/all")
+    public List<NotificationDto> getAllNotifications() {
+        return NotificationMapper.toDtoList(notificationService.getAllNotifications());
+    }
+
+    @GetMapping("/{id}")
+    public NotificationDto getNotificationById(@PathVariable Long id) {
+        Notification response = notificationService.getNotificationById(id);
+        return NotificationMapper.toDto(response);
+    }
+
+    @PutMapping("/{id}")
+    public NotificationDto updateNotification(@PathVariable Long id, @RequestBody @Valid NotificationDto request) {
+        Notification response = notificationService.updateNotification(id, request);
+
+        return NotificationMapper.toDto(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteNotification(@PathVariable Long id) {
+        notificationService.deleteNotification(id);
+        return "Уведомление удалено";
+    }
+
+    @GetMapping("/status/{status}")
+    public List<NotificationDto> getByStatus(@PathVariable NotificationStatus status) {
+        return NotificationMapper.toDtoList(notificationService.getNotificationsByStatus(status));
+    }
+
+    @GetMapping("/channel/{channel}")
+    public List<NotificationDto> getByChannel(@PathVariable NotificationChannel channel) {
+        return NotificationMapper.toDtoList(notificationService.getNotificationsByChannel(channel));
+
+    }
+
+    @GetMapping("/recipient/{recipientId}")
+    public List<NotificationDto> getByRecipientId(@PathVariable Long recipientId) {
+        return NotificationMapper.toDtoList(notificationService.getNotificationsByRecipientId(recipientId));
     }
 }
-
-/*
-// -------------------------------------------------------------------------
-// ВАРИАНТ ЧАСТИ 3 (Java Config): Получение бина через ApplicationContext
-// -------------------------------------------------------------------------
-// @RestController
-// public class NotificationController {
-//
-//     private final ApplicationContext context;
-//
-//     public NotificationController(ApplicationContext context) {
-//         this.context = context;
-//     }
-//
-//     @GetMapping("/notify")
-//     public String notify(@RequestParam String message, @RequestParam String email) {
-//         NotificationManager manager = context.getBean(NotificationManager.class);
-//         manager.notify(message, email);
-//         return "Уведомление отправлено через Java Config";
-//     }
-// }
-//
-// ПОЧЕМУ ОТКАЗАЛИСЬ ОТ ЭТОГО ВАРИАНТА:
-// 1. Антипаттерн "Service Locator": контроллер зависит от API контейнера Spring.
-// 2. Скрывает реальные зависимости класса (не видно, что нужен NotificationManager).
-// 3. Усложняет тестирование (нужно моковать весь ApplicationContext).
-// 4. Прямое внедрение через конструктор чище и соответствует принципам DI.
-//
-// -------------------------------------------------------------------------
-// ВАРИАНТ ЧАСТИ 2 (Проблемный): Ручное создание объекта
-// -------------------------------------------------------------------------
-// @RestController
-// public class NotificationController {
-//
-//     @GetMapping("/notify")
-//     public String notify(@RequestParam String message, @RequestParam String email) {
-//         NotificationManager manager = new NotificationManager();
-//         manager.notify(message, email);
-//         return "Уведомление отправлено (жесткая связь)";
-//     }
-// }
-//
-// ПОЧЕМУ ОТКАЗАЛИСЬ ОТ ЭТОГО ВАРИАНТА:
-// 1. Объект не управляется Spring (игнорируются @Autowired внутри него).
-// 2. Дублирование жесткой связности (контроллер тоже создает объекты вручную).
-// 3. Невозможно использовать преимущества DI во всей цепочке вызовов.
-// 4. Нарушен принцип инверсии управления (IoC).
-*/
