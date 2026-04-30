@@ -42,7 +42,7 @@ public class NotificationService {
     }
 
 
-        public List<Notification> getAllNotifications() {
+    public List<Notification> getAllNotifications() {
         return notificationRepository.findAll();
     }
 

@@ -12,17 +12,17 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    // В реальном проекте этот ключ лучше хранить в application.properties
     private final String secret = "verySecretKeyForJwtTokenVerySecretKey12345";
 
     public String generateToken(String username) {
         SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // Токен живет 1 час
                 .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+                .compact(); // Сжимаем всё в одну длинную строку
     }
 
     public String extractUsername(String token) {

@@ -18,23 +18,19 @@ public class UserController {
 
     @GetMapping("/all")
     public List<UserDto> getAllUsers() {
-        // Используем новый маппер вместо ручного builder
         return UserMapper.toDtoList(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable Long id) {
-        // Используем новый маппер
         return UserMapper.toDto(userService.getUserById(id));
     }
 
     @PutMapping("/{id}")
     public UserDto updateUser(@PathVariable Long id, @RequestBody UserDto request) {
-        // Используем новый маппер
         return UserMapper.toDto(userService.updateUser(id, request));
     }
 
-    // Задание: Защита метода удаления через @PreAuthorize
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public String deleteUser(@PathVariable Long id) {

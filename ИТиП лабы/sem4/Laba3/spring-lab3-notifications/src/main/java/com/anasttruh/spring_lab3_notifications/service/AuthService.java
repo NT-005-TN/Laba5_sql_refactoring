@@ -18,7 +18,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public void register(RegisterRequest request) {
-        // Проверка на существующий email
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Пользователь с таким email уже существует");
         }
